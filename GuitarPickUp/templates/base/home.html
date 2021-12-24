@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+
+{% block body %}
+<div class="display-table">
+    <div class="display-table-cell">
+        
+        <h1 class="title"><b>Guitar PickUp</b></h1>
+        <p class="desc font-white">Simplist way to learn Guitar</p>
+    
+        <a class="notify-btn" href="{% url 'register' %}"><b>Register</b></a>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a class="notify-btn" href="{% url 'login' %}"><b>Login</b></a>
+        
+    </div><!-- display-table -->
+</div><!-- display-table-cell -->
+
+{% endblock %}

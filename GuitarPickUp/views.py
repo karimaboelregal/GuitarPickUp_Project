@@ -11,8 +11,12 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.shortcuts import render, redirect
 
 # Create your views here.
+
+def home(request):
+    return render(request, 'base/home.html')
 
 class CustomLoginView(LoginView):
     template_name = 'base/login.html'
