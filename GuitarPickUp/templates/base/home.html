@@ -37,7 +37,12 @@
             <div class="ml-auto w-25">
                 <nav class="site-navigation position-relative text-right" role="navigation">
                     <ul class="site-menu main-menu site-menu-dark js-clone-nav mr-auto d-none d-lg-block m-0 p-0">
-                        <li class="cta"><a href="#contact-section" class="nav-link"><span>Login</span></a></li>
+                        {% if request.user.is_authenticated%}
+                        <p>Welcome {{request.user}}</p>
+                        <li class="cta"><a href="{% url 'logout' %}" class="nav-link"><span>Logout</span></a></li>
+                        {% else %}
+                        <li class="cta"><a href="{% url 'login' %}" class="nav-link"><span>Login</span></a></li>
+                        {% endif %}
                     </ul>
                 </nav>
                 <a href="#"
@@ -67,7 +72,7 @@
                         </div>
 
                         <div class="col-lg-5 ml-auto" data-aos="fade-up" data-aos-delay="500">
-                            <form action="" method="post" class="form-box">
+                            <form method="POST" class="form-box">
                                 <h3 class="h4 text-black mb-4">Sign Up</h3>
                                 <div class="form-group">
                                     <input type="text" class="form-control" placeholder="Email Addresss">

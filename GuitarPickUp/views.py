@@ -31,20 +31,21 @@ class CustomLoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        return reverse_lazy('tasks')
+        return reverse_lazy('home')
 
 
 class RegisterPage(FormView):
-    template_name = 'base/register.html'
+    template_name = 'base/home.html'
     form_class = UserCreationForm
     redirect_authenticated_user = True
-    success_url = reverse_lazy('tasks')
+    success_url = reverse_lazy('home')
 
     def form_valid(self, form):
         user = form.save()
         if user is not None:
             login(self.request,user)
         return super(RegisterPage,self).form_valid(form)
+
 @gzip.gzip_page
 def mediapipePage(request):
     try:
