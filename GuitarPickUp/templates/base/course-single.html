@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+
+<div class="row d-flex justify-content-center text-center">
+    <div class="col-4"><video width="450" height="350" controls style="display:inline-block"><source src="/static/images/video.mp4" type="video/mp4"></video></div>
+    <div class="col-4"><img width=450 height=350 style="display: inline-block"src="{% url 'mediapipePage' %}"></div>
+  </div> 
+
+
+<button class="btn btn-primary py-3 px-5 btn-pill exercise" style="display:none">Try now</button>
+
+
+
+{% endblock %}
