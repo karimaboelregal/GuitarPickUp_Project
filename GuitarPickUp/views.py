@@ -46,15 +46,14 @@ class RegisterPage(FormView):
             login(self.request,user)
         return super(RegisterPage,self).form_valid(form)
 
+def coursePage(request):
+    return render(request, 'base/course-single.html')
+
 @gzip.gzip_page
 def mediapipePage(request):
-    try:
-        cam = VideoCamera()
-        return StreamingHttpResponse(gen(cam), content_type="multipart/x-mixed-replace;boundary=frame")
-    except:
-        pass
-    return render(request, 'app1.html')
-
+    cam = VideoCamera()
+    return StreamingHttpResponse(gen(cam, request), content_type="multipart/x-mixed-replace;boundary=frame")
+    
 #to capture video class
 class VideoCamera(object):
     def __init__(self):
@@ -77,8 +76,11 @@ class VideoCamera(object):
             (self.grabbed, self.frames) = self.video.read()
             self.frame = self.detector.find_hands(self.frames)
 
-def gen(camera):
+def gen(camera, rq):
     while True:
+        if (rq.path != "/mediapipePage/"):
+            print("hi")
+            break
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
@@ -101,7 +103,6 @@ class handDetector():
         if(self.results.multi_hand_landmarks):
             for handLms in self.results.multi_hand_landmarks:   
                 if(draw):
-                    print(self.results.multi_handedness)
                     self.mpDraw.draw_landmarks(img, handLms,self.mpHands.HAND_CONNECTIONS)
         
         return img
