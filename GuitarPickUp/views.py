@@ -47,7 +47,7 @@ class RegisterPage(FormView):
         return super(RegisterPage,self).form_valid(form)
 
 def coursePage(request):
-    return render(request, 'base/course-single.html')
+    return render(request, 'base/try_excercise.html')
 
 @gzip.gzip_page
 def mediapipePage(request):
