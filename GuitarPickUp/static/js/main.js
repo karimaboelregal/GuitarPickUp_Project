@@ -75,7 +75,7 @@ jQuery(document).ready(function($) {
 				$('body').addClass('offcanvas-menu');
 				$this.addClass('active');
 			}
-		}) 
+		}) 		
 
 		// click outisde offcanvas
 		$(document).mouseup(function(e) {

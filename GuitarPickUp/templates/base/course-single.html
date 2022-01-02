@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+
+{% block body %}
+<div class="site-mobile-menu site-navbar-target">
+    <div class="site-mobile-menu-header">
+        <div class="site-mobile-menu-close mt-3">
+            <span class="icon-close2 js-menu-toggle"></span>
+        </div>
+    </div>
+    <div class="site-mobile-menu-body"></div>
+</div>
+
+<!--------------------------Header section ----------------------------------->
+
+<header class="site-navbar py-4 js-sticky-header site-navbar-target" role="banner">
+
+    <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <div class="site-logo mr-auto w-25"><a href="index.html">Guitar<a style="color: #d70303;"
+                        href="index.html">PickUp</a></a></div>
+
+            <div class="mx-auto text-center">
+                <nav class="site-navigation position-relative text-right" role="navigation">
+                    <ul class="site-menu main-menu js-clone-nav mx-auto d-none d-lg-block  m-0 p-0">
+                        <li><a href="/" class="nav-link">Home</a></li>
+                        <li><a href="/" class="nav-link">About Us</a></li>
+                        <li><a href="/" class="nav-link">Programs</a></li>
+                        <li><a href="/" class="nav-link">Contact Us</a></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="ml-auto w-25">
+                <nav class="site-navigation position-relative text-right" role="navigation">
+                    <ul class="site-menu main-menu site-menu-dark js-clone-nav mr-auto d-none d-lg-block m-0 p-0">
+                        {% if request.user.is_authenticated%}
+                        <p>Welcome {{request.user}}</p>
+                        <li class="cta"><a href="{% url 'logout' %}" class="nav-link"><span>Logout</span></a></li>
+                        {% else %}
+                        <li class="cta"><a href="{% url 'login' %}" class="nav-link"><span>Login</span></a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                <a href="#"
+                    class="d-inline-block d-lg-none site-menu-toggle js-menu-toggle text-black float-right"><span
+                        class="icon-menu h3"></span></a>
+            </div>
+        </div>
+    </div>
+
+</header>
+
+<!--------------------------Home section ----------------------------------->
+
+<div class="intro-section" id="programs-section">
+    <div class="slide-1" style="background-image: url('static/images/main.jpeg');" data-stellar-background-ratio="0.5">
+        <h1 data-aos="fade-up" data-aos-delay="100" class="text-center" style="position: absolute; text-align: center; width:100%; top:20%">Exercise 1</h1>
+
+        <div class="container">
+
+            <div class="row align-items-center">
+                
+                <div class="col-6"><video width="450" height="350" controls style="object-fit: fill;"><source src="/static/images/video.mp4" type="video/mp4"></video></div>
+                <div class="col-6"><img width=450 height=350 src="{% url 'mediapipePage' %}"></div>
+            
+            </div>
+
+        </div>
+        <div style="position: absolute; text-align: center; width:100%; bottom:20%"><button class="btn btn-primary py-3 px-5 btn-pill exercise">Try now</button></div>
+
+    </div>
+</div>
+
+
+<!--------------------------Contact us section ----------------------------------->
+
+<!--------------------------Footer section ----------------------------------->
+{% endblock %}
