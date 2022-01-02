@@ -1,12 +1,13 @@
 from django.urls import path
-from .views import CustomLoginView,RegisterPage,mediapipePage,coursePage
+from .views import CustomLoginView,mediapipePage,coursePage
 from . import views
 from django.contrib.auth.views import LogoutView
 
+ 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('login/', CustomLoginView.as_view(), name='login'),
-    path('register/', RegisterPage.as_view(), name='register'),
+    path('register/', views.registerPage, name="register"),
+    path('login/', views.loginPage, name="login"),  
     path('mediapipePage/', mediapipePage, name='mediapipePage'),
     path('exercise/', coursePage, name='exercise'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),

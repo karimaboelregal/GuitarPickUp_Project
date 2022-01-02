@@ -4,6 +4,7 @@ from .models import *
 from django.core.mail import EmailMessage
 from django.views.decorators import gzip
 from django.http import StreamingHttpResponse
+from django.http import HttpResponseRedirect
 import cv2
 import threading
 import mediapipe as mp
@@ -14,12 +15,15 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView,UpdateView,DeleteView,FormView
 from django.urls import reverse_lazy
+from django.contrib import messages
 
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
+from django.contrib.auth import login,authenticate
 from django.shortcuts import render, redirect
+from .forms import LoginForm
+from .forms import CreateUserForm
 
 
 def home(request):
@@ -34,17 +38,43 @@ class CustomLoginView(LoginView):
         return reverse_lazy('home')
 
 
-class RegisterPage(FormView):
-    template_name = 'base/home.html'
-    form_class = UserCreationForm
-    redirect_authenticated_user = True
-    success_url = reverse_lazy('home')
+def loginPage(request):
+	if request.user.is_authenticated:
+		return redirect('home')
+	else:
+		if request.method == 'POST':
+			username = request.POST.get('username')
+			password =request.POST.get('password')
 
-    def form_valid(self, form):
-        user = form.save()
-        if user is not None:
-            login(self.request,user)
-        return super(RegisterPage,self).form_valid(form)
+			user = authenticate(request, username=username, password=password)
+
+			if user is not None:
+				login(request, user)
+				return redirect('home')
+			else:
+				messages.info(request, 'Username OR password is incorrect')
+
+		context = {}
+		return render(request, 'base/login.html', context)
+
+
+def registerPage(request):
+	if request.user.is_authenticated:
+		return redirect('home')
+	else:
+		form = CreateUserForm()
+		if request.method == 'POST':
+			form = CreateUserForm(request.POST)
+			if form.is_valid():
+				form.save()
+				user = form.cleaned_data.get('username')
+				messages.success(request, 'Account was created for ' + user)
+
+				return redirect('login')
+			
+
+		context = {'form':form}
+		return render(request, 'base/home.html', context)
 
 def coursePage(request):
     return render(request, 'base/try_excercise.html')
