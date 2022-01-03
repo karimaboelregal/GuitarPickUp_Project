@@ -79,6 +79,9 @@ def registerPage(request):
 def coursePage(request):
     return render(request, 'base/try_excercise.html')
 
+def feedbackpage(request):
+    return render(request, 'base/feedback.html')
+
 @gzip.gzip_page
 def mediapipePage(request):
     cam = VideoCamera()
