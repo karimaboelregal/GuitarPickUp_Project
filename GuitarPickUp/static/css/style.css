@@ -894,6 +894,12 @@ h1, h2, h3, h4, h5,
   font-style: italic;
   color: #fff; }
 
+
+  dl { width: 400px }
+  dt { float: left; width: 200px; overflow: hidden; white-space: nowrap }
+  dd { float: left; width: 100px; overflow: hidden }
+  
+  dt:after { content: " .................................................................................." }
 .process, .service {
   position: relative; }
   .process .number, .service .number {
