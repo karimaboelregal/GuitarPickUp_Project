@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Feedback</title>
+<style>
+    .readonly-draft-view .caption-group-preview:nth-child(even) {
+        background-color: #f1f1f1;
+    }
+
+    .new-workspace {
+        background: #f1f1f1;
+        padding: 0;
+        color: dimgray;
+    }
+
+    .new-workspace .section {
+        background: #fff;
+        height: 95%;
+        padding: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .new-workspace .section .header {
+        margin-top: 0px;
+    }
+
+    .app h1 {
+        color: #3c3c3c !important;
+        font-family: "Montserrat", "Lucida Grande", "Segoe UI", Verdana, Helvetica, Arial, sans-serif;
+        font-weight: 700 !important;
+        font-size: 18px !important;
+    }
+
+    .new-workspace .section .header:after {
+        display: block;
+        content: "";
+        border-bottom: 1px solid #e2e2e2;
+        padding-top: 10px;
+        margin: 0px -20px;
+        margin-bottom: 20px;
+    }
+
+    .clearfix:before,
+    .clearfix:after {
+        display: table;
+        content: "";
+        line-height: 0;
+    }
+
+    .clearfix:after {
+        clear: both;
+    }
+
+    ul.unstyled,
+    ol.unstyled {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    p,
+    ul,
+    ol {
+        font-family: "Lucida Grande", "Segoe UI", Verdana, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        color: dimgray;
+        line-height: 20px;
+    }
+
+    .spot-check-clips-list li {
+        float: left;
+        padding: 20px;
+    }
+
+    .new-workspace a:not(.btn) {
+        color: #4289cc;
+    }
+
+    .file-name {
+        clear: both;
+    }
+
+    #captions-spotcheck-container #mediaplayer-buttons-container {
+        display: inline-block;
+        margin-left: -18px;
+    }
+
+    .mejs-offscreen {
+        border: 0;
+        clip: rect(1px, 1px, 1px, 1px);
+        -webkit-clip-path: inset(50%);
+        clip-path: inset(50%);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+        word-wrap: normal;
+    }
+
+    .mejs-container {
+        background: #000;
+        box-sizing: border-box;
+        font-family: 'Helvetica', Arial, sans-serif;
+        position: relative;
+        text-align: left;
+        text-indent: 0;
+        vertical-align: top;
+    }
+
+    .mejs-container * {
+        box-sizing: border-box;
+    }
+
+    .mejs-mediaelement {
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 0;
+    }
+
+    .readonly-draft-view {
+        height: 30vh;
+        padding: 1em 0;
+        margin-top: 1em;
+        overflow-y: scroll;
+    }
+
+    .readonly-draft-view .caption-group-preview {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0.25em 0.35em;
+    }
+
+    .readonly-draft-view .caption-group-preview .text {
+        text-align: left;
+        width: 80%;
+    }
+
+    .readonly-draft-view .caption-group-preview .timestamp {
+        text-align: right;
+        margin-left: 1em;
+        font-style: italic;
+        font-size: 0.85em;
+    }
+
+    .app {
+        background-color: #f1f1f1;
+    }
+
+    .container {
+        margin-right: auto;
+        margin-left: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .color{
+        background-color: #343a40;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!--------------------------Header section ----------------------------------->
+    <div class="site-mobile-menu site-navbar-target">
+        <div class="site-mobile-menu-header">
+            <div class="site-mobile-menu-close mt-3">
+                <span class="icon-close2 js-menu-toggle"></span>
+            </div>
+        </div>
+        <div class="site-mobile-menu-body"></div>
+    </div>
+
+    <header class="color site-navbar py-4 js-sticky-header site-navbar-target" role="banner">
+
+        <div class="container-fluid">
+            <div class="d-flex align-items-center">
+                <div class="site-logo mr-auto w-25"><a href="index.html">Guitar<a style="color: #d70303;"
+                            href="index.html">PickUp</a></a></div>
+    
+                <div class="mx-auto text-center">
+                    <nav class="site-navigation position-relative text-right" role="navigation">
+                        <ul class="site-menu main-menu js-clone-nav mx-auto d-none d-lg-block  m-0 p-0">
+                            <li><a href="/" class="nav-link">Home</a></li>
+                            <li><a href="/" class="nav-link">About Us</a></li>
+                            <li><a href="/" class="nav-link">Programs</a></li>
+                            <li><a href="/" class="nav-link">Contact Us</a></li>
+                        </ul>
+                    </nav>
+                </div>
+    
+                <div class="ml-auto w-25">
+                    <nav class="site-navigation position-relative text-right" role="navigation">
+                        <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block m-0 p-0">
+                            {% if request.user.is_authenticated%}
+                            <li><a class="nav-link">Welcome {{request.user}}</a></li>
+                            <li class="cta"><a href="{% url 'logout' %}" class="nav-link"><span>Logout</span></a></li>
+                            {% else %}
+                            <li class="cta"><a href="{% url 'login' %}" class="nav-link"><span>Login</span></a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    <a href="#"
+                        class="d-inline-block d-lg-none site-menu-toggle js-menu-toggle text-black float-right"><span
+                            class="icon-menu h3"></span></a>
+                </div>
+            </div>
+        </div>
+    
+    </header>
+
+    <!--------------------------Home section ----------------------------------->
+    <div class="intro-section" id="programs-section" style="padding-top: 105px;min-height: 720px !important;">
+        <div class="app">
+            <div class="container">
+                <div class="new-workspace">
+                    <div class="row top20">
+                        <div class="col-xs-8 col-sm-10 col-md-8 col-lg-6" id="captions-spotcheck-column">
+                            <div class="section" id="captions-spotcheck-container">
+                                <h1 class="header">
+                                    File Review
+                                </h1>
+                                <div class="clearfix">
+                                    <div id="spot-check-container-198565942">
+                                        <h2>Excercise 1 - my video</h2>
+                                        <div class="file-name">Description of video</div>
+                                        <div id="mediaplayer-buttons-container">
+                                            <video width="104%" height="350" controls style="object-fit: fill;"><source src="/static/images/video.mp4" type="video/mp4"></video>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="readonly-draft-view">
+                                    <div class="caption-group-preview">
+                                        <div class="text">Feedback 1.</div>
+                                        <span class="timestamp">00:00:00</span>
+                                    </div>
+                                    <div class="caption-group-preview">
+                                        <div class="text">Feedback 2.</div>
+                                        <span class="timestamp">00:00:01</span>
+                                    </div>
+                                    <div class="caption-group-preview">
+                                        <div class="text">Feedback 3.</div>
+                                        <span class="timestamp">00:00:03</span>
+                                    </div>
+                                    <div class="caption-group-preview">
+                                        <div class="text">Feedback 4</div>
+                                        <span class="timestamp">00:00:05</span>
+                                    </div>
+                                    <div class="caption-group-preview">
+                                        <div class="text">Feedback 5</div>
+                                        <span class="timestamp">00:00:06</span>
+                                    </div>
+                                    <div class="caption-group-preview">
+                                        <div class="text">Feedback 6</div>
+                                        <span class="timestamp">00:00:08</span>
+                                    </div>
+                                    <div class="caption-group-preview">
+                                        <div class="text">Feedback 7</div>
+                                        <span class="timestamp">00:00:09</span>
+                                    </div>
+                                    <div class="caption-group-preview">
+                                        <div class="text">Feedback 8.</div>
+                                        <span class="timestamp">00:00:11</span>
+                                    </div>
+                                    <div class="caption-group-preview">
+                                        <div class="text">Feedback 9.</div>
+                                        <span class="timestamp">00:00:12</span>
+                                    </div>
+                                    <div class="caption-group-preview">
+                                        <div class="text">Feedback 10.</div>
+                                        <span class="timestamp">00:00:13</span>
+                                    </div>
+                                    <div class="caption-group-preview">
+                                        <div class="text">Feedback 11.</div>
+                                        <span class="timestamp">00:00:15</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-8 col-sm-10 col-md-8 col-lg-6" id="captions-scorecard-column">
+                            <div class="section" style="height: auto !important;" id="captions-scorecard-container">
+                                <h1 class="header">
+                                    Caption Feedback
+                                </h1>
+                                <div class="clearfix">
+    
+                                    <h4>Feedback</h4>
+                                    <h5>What you did well:</h5>
+                                    <p>
+                                        Good job with accuracy and alignment.
+                                    </p>
+                                    <br>
+                                    <h5>What you could have done better:</h5>
+                                    <p>
+                                        nothing noted in the clip(s)
+                                    </p>
+    
+                                    <br>
+    
+                                </div>
+    
+                                <br>
+    
+                                <a id="back-to-project" href="/workspace/project/CP0157511228P-1"
+                                    class="btn btn-tiny windows">« Back to
+                                    the my past projects</a>
+                                <a id="finish-review"
+                                    href="/Workspace/CompleteGradeReview/CP0157511228P-1?projectFlags=None"
+                                    class="btn btn-tiny windows">Play again</a>
+    
+                                <button
+                                    style="background-color: red;color: white;border-color: white;margin-left: 216px;">Download
+                                    feedback</button>
+    
+                                <script>
+                                    $(function () {
+                                        $('.glyphicon-info-sign').tooltip({ content: 'body' });
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--------------------------Footer section ----------------------------------->
+
+    <footer class="footer-section bg-white">
+        <div class="container">
+        <div class="row pt-5 mt-5 text-center">
+            <div class="col-md-12">
+            <div class="border-top pt-5">
+            <p>
+        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | by <a href="#" target="_blank" >Guitar PickUp</a>
+        </p>
+            </div>
+            </div>
+            
+        </div>
+        </div>
+    </footer>
+{% endblock %}

@@ -868,7 +868,6 @@ h1, h2, h3, h4, h5,
       background-color: #7971ea; }
 
 .footer-section {
-  padding: 7em 0;
   background-color: #fafafa; }
   .footer-section p {
     font-size: 1rem; }
@@ -895,6 +894,12 @@ h1, h2, h3, h4, h5,
   font-style: italic;
   color: #fff; }
 
+
+  dl { width: 400px }
+  dt { float: left; width: 200px; overflow: hidden; white-space: nowrap }
+  dd { float: left; width: 100px; overflow: hidden }
+  
+  dt:after { content: " .................................................................................." }
 .process, .service {
   position: relative; }
   .process .number, .service .number {
@@ -967,7 +972,7 @@ h1, h2, h3, h4, h5,
   width: 35px;
   height: 35px;
   border-radius: 50%;
-  background: #7971ea; }
+  background: #d70303; }
   .custom-icon-wrap .custom-icon-inner .icon {
     display: inline-block;
     position: absolute;
