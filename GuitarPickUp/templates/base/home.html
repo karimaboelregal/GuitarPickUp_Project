@@ -36,9 +36,9 @@
 
             <div class="ml-auto w-25">
                 <nav class="site-navigation position-relative text-right" role="navigation">
-                    <ul class="site-menu main-menu site-menu-dark js-clone-nav mr-auto d-none d-lg-block m-0 p-0">
+                    <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block m-0 p-0">
                         {% if request.user.is_authenticated %}
-                        <p>Welcome {{request.user}}</p>
+                        <li><a class="nav-link">Welcome {{request.user}}</a></li>
                         <li class="cta"><a href="{% url 'logout' %}" class="nav-link"><span>Logout</span></a></li>
                         {% else %}
                         <li class="cta"><a href="{% url 'login' %}" class="nav-link"><span>Login</span></a></li>
