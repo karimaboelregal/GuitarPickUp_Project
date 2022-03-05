@@ -16,7 +16,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView,UpdateView,DeleteView,FormView
 from django.urls import reverse_lazy
 from django.contrib import messages
-
+from .tuner_hps import *
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
@@ -29,6 +29,7 @@ from rest_framework.response import Response
 from knox.models import AuthToken
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
+import threading
 
 def home(request):
     return render(request, 'base/home.html')
@@ -111,6 +112,8 @@ def feedbackpage(request):
 @gzip.gzip_page
 def mediapipePage(request):
     cam = VideoCamera()
+    t1 = threading.Thread(target=sound)
+    t1.start()
     return StreamingHttpResponse(gen(cam, request), content_type="multipart/x-mixed-replace;boundary=frame")
     
 #to capture video class
@@ -135,12 +138,21 @@ class VideoCamera(object):
             (self.grabbed, self.frames) = self.video.read()
             self.frame = self.detector.find_hands(self.frames)
 
+
+
+def sound():
+    with sd.InputStream(channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+        while True:
+            time.sleep(0.5)
+
+
 def gen(camera, rq):
     while True:
         if (rq.path != "/mediapipePage/"):
             print("hi")
             break
         frame = camera.get_frame()
+
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
