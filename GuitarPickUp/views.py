@@ -29,6 +29,9 @@ from rest_framework.response import Response
 from knox.models import AuthToken
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
+#imports from adel
+import joblib
+import numpy as np
 
 def home(request):
     return render(request, 'base/home.html')
@@ -115,6 +118,10 @@ def mediapipePage(request):
     
 #to capture video class
 class VideoCamera(object):
+    index_model = joblib.load("GuitarPickUp/models/classifier_index.pkl")
+    middle_model = joblib.load("GuitarPickUp/models/classifier_middle.pkl")
+    ring_model = joblib.load("GuitarPickUp/models/classifier_ring.pkl")
+    pinky_model = joblib.load("GuitarPickUp/models/classifier_pinky.pkl")
     def __init__(self):
         self.detector = handDetector()
         self.video = cv2.VideoCapture(0)
@@ -131,10 +138,75 @@ class VideoCamera(object):
         return jpeg.tobytes()
 
     def update(self):
+        
         while True:
             (self.grabbed, self.frames) = self.video.read()
             self.frame = self.detector.find_hands(self.frames)
-
+            hands_dict = self.detector.find_position2(self.frame)
+            coordinates_left = []
+            coordinates_right = []
+            
+            screen_width = None
+            screen_height = None
+            #if hands are not detected dictionary is null which triggers an error
+            if(hands_dict != None):
+                #store left and right hand into separate lists depending on the dictionary
+                if(len(hands_dict) == 1):
+                    screen_width = hands_dict[0]['screen_width']
+                    screen_height = hands_dict[0]['screen_height']
+                    if(hands_dict[0]['hand_class'] == 'Right'):
+                        coordinates_right = hands_dict[0]['pos']
+                    if(hands_dict[0]['hand_class'] == 'Left'):
+                        coordinates_left = hands_dict[0]['pos']
+                if(len(hands_dict) == 2):
+                    screen_width = hands_dict[0]['screen_width']
+                    screen_height = hands_dict[0]['screen_height']
+                    if(hands_dict[0]['hand_class'] == 'Left' and hands_dict[1]['hand_class'] == 'Right'):
+                        coordinates_left = hands_dict[0]['pos']
+                        coordinates_right = hands_dict[1]['pos']
+                    if(hands_dict[0]['hand_class'] == 'Right' and hands_dict[1]['hand_class'] == 'Left'):
+                        coordinates_right = hands_dict[0]['pos']
+                        coordinates_left = hands_dict[1]['pos']
+        
+            #print(coordinates_left)
+            if(len(coordinates_right) != 0):
+                index_left_coor = np.array([coordinates_right[5][1],coordinates_right[5][2],coordinates_right[5][3],
+                                            coordinates_right[6][1],coordinates_right[6][2],coordinates_right[6][3],
+                                            coordinates_right[7][1],coordinates_right[7][2],coordinates_right[7][3],
+                                            coordinates_right[8][1],coordinates_right[8][2],coordinates_right[8][3]])
+                index_left_coor = index_left_coor.reshape(1,12)
+                middle_left_coor = np.array([coordinates_right[9][1],coordinates_right[9][2],coordinates_right[9][3],
+                                            coordinates_right[10][1],coordinates_right[10][2],coordinates_right[10][3],
+                                            coordinates_right[11][1],coordinates_right[11][2],coordinates_right[11][3],
+                                            coordinates_right[12][1],coordinates_right[12][2],coordinates_right[12][3]])
+                middle_left_coor = middle_left_coor.reshape(1,12)
+                
+                ring_left_coor = np.array([coordinates_right[13][1],coordinates_right[13][2],coordinates_right[13][3],
+                                            coordinates_right[14][1],coordinates_right[14][2],coordinates_right[14][3],
+                                            coordinates_right[15][1],coordinates_right[15][2],coordinates_right[15][3],
+                                            coordinates_right[16][1],coordinates_right[16][2],coordinates_right[16][3]])
+                ring_left_coor = ring_left_coor.reshape(1,12)
+                
+                pinky_left_coor = np.array([coordinates_right[17][1],coordinates_right[17][2],coordinates_right[17][3],
+                                            coordinates_right[18][1],coordinates_right[18][2],coordinates_right[18][3],
+                                            coordinates_right[19][1],coordinates_right[19][2],coordinates_right[19][3],
+                                            coordinates_right[20][1],coordinates_right[20][2],coordinates_right[20][3]])
+                pinky_left_coor = pinky_left_coor.reshape(1,12)
+                
+                
+                print(index_left_coor)
+                index_prediction = self.index_model.predict(index_left_coor)[0]
+                middle_prediction = self.middle_model.predict(middle_left_coor)[0]
+                ring_prediction = self.ring_model.predict(ring_left_coor)[0]
+                pinky_prediction = self.pinky_model.predict(pinky_left_coor)[0]
+                
+                cv2.putText(self.frame,f"index {index_prediction}",(10,70), cv2.FONT_HERSHEY_PLAIN,3,(0,0,0),3)
+                cv2.putText(self.frame,f"middle {middle_prediction}",(10,110), cv2.FONT_HERSHEY_PLAIN,3,(0,0,0),3)
+                cv2.putText(self.frame,f"ring {ring_prediction}",(10,150), cv2.FONT_HERSHEY_PLAIN,3,(0,0,0),3)
+                cv2.putText(self.frame,f"pinky {pinky_prediction}",(10,190), cv2.FONT_HERSHEY_PLAIN,3,(0,0,0),3)
+            #cv2.imwrite(f'{dirName}/frame_{frameNr}.jpg',img)
+            #frameNr = frameNr+1
+            
 def gen(camera, rq):
     while True:
         if (rq.path != "/mediapipePage/"):
@@ -154,7 +226,51 @@ class handDetector():
         
         self.hands = self.mpHands.Hands(self.mode,self.max_hands,1,self.detection_confidence,self.trackConfidence)
         self.mpDraw = mp.solutions.drawing_utils
+    
+    def mirror_this(image_file, gray_scale=False, with_plot=False):
+        image_mirror = np.fliplr(image_file)
+        return image_mirror.astype(np.uint8).copy() 
+    
+    def find_position2(self,img,draw = False):
+        lmList = []
+        if(self.results.multi_hand_landmarks):
+            #print(self.results.multi_handedness)
         
+            myHand = self.results
+            # index,score,label
+            handReports = myHand.multi_handedness
+        
+            
+            
+            multi_handedness_list = []
+            for handReport in handReports:
+                ls = [{'index':value.index,'label':value.label,'confidence':value.score} for value in handReport.classification]
+                #the dictionary has to be returned in an array
+                multi_handedness_list.append(ls[0])
+            #print(multi_handedness_list)
+            hands_dictionaries = []
+            for index,hand in enumerate(multi_handedness_list):
+                #print(hand)
+                myHandLandmarks = myHand.multi_hand_landmarks[index]
+                #print(myHandLandmarks)
+                positions  = {'hand_class':hand['label'],
+                              'hand_confidence':hand['confidence'],
+                              'pos':[],'screen_width':img.shape[0],'screen_height':img.shape[1]}
+                for id,lm in enumerate(myHandLandmarks.landmark):
+                    positions['pos'].append((id,lm.x,lm.y,lm.z))
+                    
+                    #print(id,lm,hand['label'])
+
+                hands_dictionaries.append(positions)
+                
+            
+                #print(hands_dictionaries)
+                    
+                    
+            return hands_dictionaries
+                
+          
+
     def find_hands(self,img,draw = True):
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.results = self.hands.process(imgRGB)
