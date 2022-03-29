@@ -65,22 +65,102 @@
             <div class="row align-items-center">
                 
                 <div class="col-6"><video width="450" height="350" controls style="object-fit: fill;"><source src="/static/images/video1.mp4" type="video/mp4"></video></div>
-                <div class="col-6"><img width=450 height=350 src="{% url 'mediapipePage' %}"></div>
+                <div class="col-6">
+                    <div class="container">
+                        <video class="input_video" style="display:none"></video>
+                        <canvas class="output_canvas" width="450" height="350"></canvas>
+                      </div>
+                </div>
             
             </div>
-
+            <script type="module">
+                const videoElement = document.getElementsByClassName('input_video')[0];
+                const canvasElement = document.getElementsByClassName('output_canvas')[0];
+                const canvasCtx = canvasElement.getContext('2d');
+                var indexFinger = document.getElementById("index");
+                var middleFinger = document.getElementById("middle");
+                var ringFinger = document.getElementById("ring");
+                var pinkyFinger = document.getElementById("pinky");
+                function onResults(results) {
+                  canvasCtx.save();
+                  canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                  canvasCtx.drawImage(
+                      results.image, 0, 0, canvasElement.width, canvasElement.height);
+                  if (results.multiHandLandmarks) {
+                      var left_hand;
+                      var right_hand;
+                      for (var i = 0; i < 2; i++) {
+                          if (results.multiHandedness[i]) {
+                            if (results.multiHandedness[i]['label'] == "Left") {
+                                left_hand = results.multiHandLandmarks[i];
+                            } else if (results.multiHandedness[i]['label'] == "Right"){
+                                right_hand = results.multiHandLandmarks[i];
+                            }
+                        }
+                      }
+                    $.ajax({
+                        url: '/validate_hands',
+                        data: {
+                            'right_hand': JSON.stringify(right_hand),
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data);
+                            if (data["index"]) {
+                                $('#index').text(data['index']);
+                                $('#ring').text(data['ring']);
+                                $('#middle').text(data['middle']);
+                                $('#pinky').text(data['pinky']);
+                                console.log(data);
+                                $('#note').text(data['note']);
+                            }
+                        }
+                    });
+                    for (const landmarks of results.multiHandLandmarks) {
+                      drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
+                                     {color: '#00FF00', lineWidth: 5});
+                      drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
+                    }
+                  }
+                  canvasCtx.restore();
+                }
+                
+                const hands = new Hands({locateFile: (file) => {
+                  return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                }});
+                hands.setOptions({
+                  maxNumHands: 2,
+                  modelComplexity: 1,
+                  minDetectionConfidence: 0.5,
+                  minTrackingConfidence: 0.5
+                });
+                hands.onResults(onResults);
+                
+                const camera = new Camera(videoElement, {
+                  onFrame: async () => {
+                    await hands.send({image: videoElement});
+                  },
+                  width: 450,
+                  height: 350
+                });
+                camera.start();
+                </script>
         </div>
-        <div style="position: absolute; text-align: center; width:100%; bottom:2%; background-color: white; color: black; width: 300px; height: 200px; margin-left: auto; margin-right: auto; left: 0; right: 0;">
+        <div style="position: absolute; text-align: center; width:100%; bottom:2%; background-color: white; color: black; width: 300px; height: 240px; margin-left: auto; margin-right: auto; left: 0; right: 0;">
             Feedback
             <hr>
             <dl>
 
-                <dt>note D</dt>
-                <dd>0.2</dd>
-                <dt>note D</dt>
-                <dd>0.2</dd>
-                <dt>note D</dt>
-                <dd>0.2</dd>
+                <dt>Index</dt>
+                <dd id="index">0.2</dd>
+                <dt>Middle</dt>
+                <dd id="middle">0.2</dd>
+                <dt>Ring</dt>
+                <dd id="ring">0.2</dd>
+                <dt>Pinky</dt>
+                <dd id="pinky">0.2</dd>
+                <dt>note</dt>
+                <dd id="note">asd</dd>
 
                 
             
