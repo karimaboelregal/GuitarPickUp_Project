@@ -35,6 +35,13 @@ import numpy as np
 import threading
 
 def home(request):
+    if (request.method == 'POST'):
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password1')
+        user = User.objects.create_user(username, email, password)
+        user.save()
+        
     return render(request, 'base/home.html')
 
 class CustomLoginView(LoginView):
@@ -88,23 +95,21 @@ class LoginAPI(KnoxLoginView):
         login(request, user)
         return super(LoginAPI, self).post(request, format=None)
 
-def registerPage(request):
-	if request.user.is_authenticated:
-		return redirect('home')
-	else:
-		form = CreateUserForm()
-		if request.method == 'POST':
-			form = CreateUserForm(request.POST)
-			if form.is_valid():
-				form.save()
-				user = form.cleaned_data.get('username')
-				messages.success(request, 'Account was created for ' + user)
-
-				return redirect('login')
+# def registerPage(request):
+# 	if request.user.is_authenticated:
+# 		return redirect('home')
+# 	else:
+# 		if request.method == 'POST':
+#             form = CreateUserForm(request.POST)
+#             if form.is_valid():
+#                 form.save()
+#                 user = form.cleaned_data.get('username')
+#                 messages.success(request, 'Account was created for ' + user)
+#                 return redirect('login')
 			
 
-		context = {'form':form}
-		return render(request, 'base/home.html', context)
+# 		context = {'form':form}
+# 		return render(request, 'base/home.html', context)
 
 def coursePage(request):
     return render(request, 'base/try_excercise.html')
