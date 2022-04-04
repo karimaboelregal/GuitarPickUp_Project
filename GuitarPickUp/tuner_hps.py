@@ -25,8 +25,9 @@ WINDOW_T_LEN = WINDOW_SIZE / SAMPLE_FREQ # length of the window in seconds
 SAMPLE_T_LENGTH = 1 / SAMPLE_FREQ # length between two samples in seconds
 DELTA_FREQ = SAMPLE_FREQ / WINDOW_SIZE # frequency step width of the interpolated DFT
 OCTAVE_BANDS = [50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600]
-
+note = "note"
 ALL_NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
+
 def find_closest_note(pitch):
   """
   This function finds the closest note for a given pitch
@@ -62,8 +63,8 @@ def callback(indata, frames, time, status):
     # skip if signal power is too low
     signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
     if signal_power < POWER_THRESH:
-      os.system('cls' if os.name=='nt' else 'clear')
-      print("Closest note: ...")
+      #os.system('cls' if os.name=='nt' else 'clear')
+      #print("Closest note: ...")
       return
 
     # avoid spectral leakage by multiplying the signal with a hann window
@@ -109,12 +110,17 @@ def callback(indata, frames, time, status):
     callback.noteBuffer.insert(0, closest_note) # note that this is a ringbuffer
     callback.noteBuffer.pop()
 
-    os.system('cls' if os.name=='nt' else 'clear')
+    #os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
-      print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
-    else:
-      print(f"Closest note: ...")
+      global note
+      note = closest_note
+      #print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
+    #else:
+      #print(f"Closest note: ...")
 
   else:
     print('no input')
 
+
+def getInfo():
+  return note;

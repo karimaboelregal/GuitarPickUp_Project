@@ -1,3 +1,4 @@
+import json
 from django.http import HttpResponse
 from django.shortcuts import render
 from .models import *
@@ -33,8 +34,16 @@ from knox.views import LoginView as KnoxLoginView
 import joblib
 import numpy as np
 import threading
+from django.http import JsonResponse
 
 def home(request):
+    if (request.method == 'POST'):
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password1')
+        user = User.objects.create_user(username, email, password)
+        user.save()
+        
     return render(request, 'base/home.html')
 
 class CustomLoginView(LoginView):
@@ -88,25 +97,25 @@ class LoginAPI(KnoxLoginView):
         login(request, user)
         return super(LoginAPI, self).post(request, format=None)
 
-def registerPage(request):
-	if request.user.is_authenticated:
-		return redirect('home')
-	else:
-		form = CreateUserForm()
-		if request.method == 'POST':
-			form = CreateUserForm(request.POST)
-			if form.is_valid():
-				form.save()
-				user = form.cleaned_data.get('username')
-				messages.success(request, 'Account was created for ' + user)
-
-				return redirect('login')
+# def registerPage(request):
+# 	if request.user.is_authenticated:
+# 		return redirect('home')
+# 	else:
+# 		if request.method == 'POST':
+#             form = CreateUserForm(request.POST)
+#             if form.is_valid():
+#                 form.save()
+#                 user = form.cleaned_data.get('username')
+#                 messages.success(request, 'Account was created for ' + user)
+#                 return redirect('login')
 			
 
-		context = {'form':form}
-		return render(request, 'base/home.html', context)
+# 		context = {'form':form}
+# 		return render(request, 'base/home.html', context)
 
 def coursePage(request):
+    t1 = threading.Thread(target=sound)
+    t1.start()
     return render(request, 'base/try_excercise.html')
 
 def feedbackpage(request):
@@ -118,7 +127,57 @@ def mediapipePage(request):
     t1 = threading.Thread(target=sound)
     t1.start()
     return StreamingHttpResponse(gen(cam, request), content_type="multipart/x-mixed-replace;boundary=frame")
-    
+
+
+index_model = joblib.load("GuitarPickUp/models/classifier_index.pkl")
+middle_model = joblib.load("GuitarPickUp/models/classifier_middle.pkl")
+ring_model = joblib.load("GuitarPickUp/models/classifier_ring.pkl")
+pinky_model = joblib.load("GuitarPickUp/models/classifier_pinky.pkl")
+
+def validate_hands(request):
+    left_hand = request.GET.get('left_hand', None)
+    right_hand = request.GET.get('right_hand', None)
+    data = {}
+    if (right_hand):
+        right_decoded = json.loads(right_hand)
+        index_left_coor = np.array([right_decoded[5]['x'],right_decoded[5]['y'],right_decoded[5]['z'],
+            right_decoded[6]['x'],right_decoded[6]['y'],right_decoded[6]['z'],
+            right_decoded[7]['x'],right_decoded[7]['y'],right_decoded[7]['z'],
+            right_decoded[8]['x'],right_decoded[8]['y'],right_decoded[8]['z']])
+        index_left_coor = index_left_coor.reshape(1,12)
+        middle_left_coor = np.array([right_decoded[9]['x'],right_decoded[9]['y'],right_decoded[9]['z'],
+            right_decoded[10]['x'],right_decoded[10]['y'],right_decoded[10]['z'],
+            right_decoded[11]['x'],right_decoded[11]['y'],right_decoded[11]['z'],
+            right_decoded[12]['x'],right_decoded[12]['y'],right_decoded[12]['z']])
+        middle_left_coor = middle_left_coor.reshape(1,12)
+
+        ring_left_coor = np.array([right_decoded[13]['x'],right_decoded[13]['y'],right_decoded[13]['z'],
+            right_decoded[14]['x'],right_decoded[14]['y'],right_decoded[14]['z'],
+            right_decoded[15]['x'],right_decoded[15]['y'],right_decoded[15]['z'],
+            right_decoded[16]['x'],right_decoded[16]['y'],right_decoded[16]['z']])
+        ring_left_coor = ring_left_coor.reshape(1,12)
+                    
+        pinky_left_coor = np.array([right_decoded[17]['x'],right_decoded[17]['y'],right_decoded[17]['z'],
+            right_decoded[18]['x'],right_decoded[18]['y'],right_decoded[18]['z'],
+            right_decoded[19]['x'],right_decoded[19]['y'],right_decoded[19]['z'],
+            right_decoded[20]['x'],right_decoded[20]['y'],right_decoded[20]['z']])
+        pinky_left_coor = pinky_left_coor.reshape(1,12)
+                    
+                    
+        print(index_left_coor)
+        index_prediction = index_model.predict(index_left_coor)[0]
+        middle_prediction = middle_model.predict(middle_left_coor)[0]
+        ring_prediction = ring_model.predict(ring_left_coor)[0]
+        pinky_prediction = pinky_model.predict(pinky_left_coor)[0]
+        info = getInfo()
+        data = {
+            'index': index_prediction,
+            'middle': middle_prediction,
+            'ring': ring_prediction,
+            'pinky': pinky_prediction,
+            'note': info,
+        }
+    return JsonResponse(data)
 #to capture video class
 class VideoCamera(object):
     index_model = joblib.load("GuitarPickUp/models/classifier_index.pkl")

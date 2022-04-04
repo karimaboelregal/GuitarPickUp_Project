@@ -12,10 +12,12 @@ urlpatterns = [
     path('api/login/', LoginAPI.as_view(), name='login'),
     path('api/logout/', knox_views.LogoutView.as_view(), name='logout'),
     path('api/logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall'),
-    path('register/', views.registerPage, name="register"),
+    #path('register/', views.registerPage, name="register"),
     path('login/', views.loginPage, name="login"),  
     path('mediapipePage/', mediapipePage, name='mediapipePage'),
     path('exercise/', coursePage, name='exercise'),
     path('feedback/', views.feedbackpage, name='feedback'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
+    path("validate_hands", views.validate_hands, name='validate_hands'),
+
 ]
