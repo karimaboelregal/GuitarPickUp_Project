@@ -31,6 +31,7 @@ class StudentVideo(models.Model):
 
 class Feedback(models.Model):
     video_id = models.ForeignKey(StudentVideo,on_delete=models.CASCADE,null=True,blank=True)
+    user_id = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     feedback = models.TextField(null=True,blank=True)
     report= models.TextField(null=True,blank=True)
 
@@ -39,3 +40,18 @@ class Feedback(models.Model):
 
     class Meta:
         ordering =['video_id']
+
+class Feedback_details(models.Model):
+    feedback_id = models.ForeignKey(Feedback,on_delete=models.CASCADE,null=True,blank=True)
+    index_class = models.BooleanField(null=True,blank=True)
+    middle_class = models.BooleanField(null=True,blank=True)
+    ring_class = models.BooleanField(null=True,blank=True)
+    pinky_class = models.BooleanField(null=True,blank=True)
+    note_played = models.CharField(null = True, blank=True,max_length=5)
+    note_class = models.BooleanField(null=True,blank=True)
+    
+    def __str__(self) -> str:
+        return self.feedback_detail
+
+    class Meta:
+        ordering =['feedback_id']
