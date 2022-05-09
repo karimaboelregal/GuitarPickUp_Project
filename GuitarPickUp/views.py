@@ -114,12 +114,18 @@ class LoginAPI(KnoxLoginView):
 # 		return render(request, 'base/home.html', context)
 
 def coursePage(request):
-    t1 = threading.Thread(target=sound)
-    t1.start()
+    #t1 = threading.Thread(target=sound)
+    #t1.start()
     return render(request, 'base/try_excercise.html')
 
 def feedbackpage(request):
     return render(request, 'base/feedback.html')
+
+def pyscripttest(request):
+    return render(request, 'base/testpyscript.html')
+
+def tuner(request):
+    return render(request, 'base/testTuner.html')
 
 @gzip.gzip_page
 def mediapipePage(request):
@@ -178,6 +184,10 @@ def validate_hands(request):
             'note': info,
         }
     return JsonResponse(data)
+
+
+
+
 #to capture video class
 class VideoCamera(object):
     index_model = joblib.load("GuitarPickUp/models/classifier_index.pkl")
@@ -272,10 +282,26 @@ class VideoCamera(object):
 
 
 
-def sound():
-    with sd.InputStream(channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-        while True:
-            time.sleep(0.5)
+def sound(request):
+    #with sd.InputStream(channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+        #while True:
+            #time.sleep(0.5)
+    
+    amp = request.POST.get('amp')
+    
+    amp_dict = json.loads(amp)
+    #indata = np.array([ np.float32((s>>2)/(32768.0)) for s in amp_dict.values()])
+    indata = np.array([s for s in amp_dict.values()])
+    indata = indata.reshape(-1,1)
+
+    note = callback(indata,None,200,False)
+    print(note)
+    note_response = {'indata':note}
+    return JsonResponse(note_response)
+
+    
+    
+    
 
 
 def gen(camera, rq):
