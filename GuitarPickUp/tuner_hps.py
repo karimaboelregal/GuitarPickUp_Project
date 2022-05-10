@@ -54,7 +54,7 @@ def callback(indata, frames, time, status):
     callback.noteBuffer = ["1","2"]
 
   if status:
-    print(status)
+    #print(status)
     return
   if any(indata):
     callback.window_samples = np.concatenate((callback.window_samples, indata[:, 0])) # append new samples
@@ -62,10 +62,11 @@ def callback(indata, frames, time, status):
 
     # skip if signal power is too low
     signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
-    if signal_power < POWER_THRESH:
+    #if signal_power < POWER_THRESH:
       #os.system('cls' if os.name=='nt' else 'clear')
       #print("Closest note: ...")
-      return
+    #  print('signal power too low')
+    #  return
 
     # avoid spectral leakage by multiplying the signal with a hann window
     hann_samples = callback.window_samples * HANN_WINDOW
@@ -114,12 +115,14 @@ def callback(indata, frames, time, status):
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
       global note
       note = closest_note
+      return note
       #print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
     #else:
       #print(f"Closest note: ...")
 
   else:
-    print('no input')
+    #print('no input')
+    pass
 
 
 def getInfo():

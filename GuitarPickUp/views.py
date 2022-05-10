@@ -114,12 +114,21 @@ class LoginAPI(KnoxLoginView):
 # 		return render(request, 'base/home.html', context)
 
 def coursePage(request):
-    t1 = threading.Thread(target=sound)
-    t1.start()
+    #t1 = threading.Thread(target=sound)
+    #t1.start()
+    #print(request.user.id)
+    feedback = Feedback(feedback = "test" , report = "test",user_id = request.user)
+    feedback.save()
     return render(request, 'base/try_excercise.html')
 
 def feedbackpage(request):
     return render(request, 'base/feedback.html')
+
+def pyscripttest(request):
+    return render(request, 'base/testpyscript.html')
+
+def tuner(request):
+    return render(request, 'base/testTuner.html')
 
 @gzip.gzip_page
 def mediapipePage(request):
@@ -178,6 +187,29 @@ def validate_hands(request):
             'note': info,
         }
     return JsonResponse(data)
+
+
+def record_feedback(request):
+    index_class = request.GET.get('index_class')
+    middle_class = request.GET.get('middle_class')
+    ring_class = request.GET.get('middle_class')
+    pinky_class = request.GET.get('pinky_class')
+    note_played = request.GET.get('note_played')
+    index_bool = index_class == 'correct'
+    middle_bool = middle_class == 'correct'
+    ring_bool = ring_class == 'correct'
+    pinky_bool = pinky_class == 'correct'
+
+    last_feedback_id = Feedback.objects.latest('id')
+    feedback_details = Feedback_details(feedback_id = last_feedback_id,index_class = index_bool,
+                            middle_class = middle_bool,
+                            ring_class = ring_bool,
+                             pinky_class = pinky_bool,
+                             note_played = note_played)
+    feedback_details.save()
+    return JsonResponse({'ok':1})
+
+
 #to capture video class
 class VideoCamera(object):
     index_model = joblib.load("GuitarPickUp/models/classifier_index.pkl")
@@ -272,10 +304,26 @@ class VideoCamera(object):
 
 
 
-def sound():
-    with sd.InputStream(channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
-        while True:
-            time.sleep(0.5)
+def sound(request):
+    #with sd.InputStream(channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+        #while True:
+            #time.sleep(0.5)
+    
+    amp = request.POST.get('amp')
+    
+    amp_dict = json.loads(amp)
+    #indata = np.array([ np.float32((s>>2)/(32768.0)) for s in amp_dict.values()])
+    indata = np.array([s for s in amp_dict.values()])
+    indata = indata.reshape(-1,1)
+
+    note = callback(indata,None,200,False)
+    print(note)
+    note_response = {'indata':note}
+    return JsonResponse(note_response)
+
+    
+    
+    
 
 
 def gen(camera, rq):

@@ -47,6 +47,8 @@ def callback(indata, frames, time, status):
   Callback function of the InputStream method.
   """
   # define static variables
+  
+  
   if not hasattr(callback, "window_samples"):
     callback.window_samples = [0 for _ in range(WINDOW_SIZE)]
   if not hasattr(callback, "noteBuffer"):
@@ -60,12 +62,13 @@ def callback(indata, frames, time, status):
     callback.window_samples = callback.window_samples[len(indata[:, 0]):] # remove old samples
 
     # skip if signal power is too low
+    '''
     signal_power = (np.linalg.norm(callback.window_samples, ord=2)**2) / len(callback.window_samples)
     if signal_power < POWER_THRESH:
       os.system('cls' if os.name=='nt' else 'clear')
       print("Closest note: ...")
       return
-
+    '''
     # avoid spectral leakage by multiplying the signal with a hann window
     hann_samples = callback.window_samples * HANN_WINDOW
     magnitude_spec = abs(scipy.fftpack.fft(hann_samples)[:len(hann_samples)//2])
@@ -105,13 +108,14 @@ def callback(indata, frames, time, status):
     closest_note, closest_pitch = find_closest_note(max_freq)
     max_freq = round(max_freq, 1)
     closest_pitch = round(closest_pitch, 1)
-
+    print(closest_pitch)
     callback.noteBuffer.insert(0, closest_note) # note that this is a ringbuffer
     callback.noteBuffer.pop()
 
-    os.system('cls' if os.name=='nt' else 'clear')
+    #os.system('cls' if os.name=='nt' else 'clear')
     if callback.noteBuffer.count(callback.noteBuffer[0]) == len(callback.noteBuffer):
       print(f"Closest note: {closest_note} {max_freq}/{closest_pitch}")
+
     else:
       print(f"Closest note: ...")
 

@@ -19,5 +19,8 @@ urlpatterns = [
     path('feedback/', views.feedbackpage, name='feedback'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
     path("validate_hands", views.validate_hands, name='validate_hands'),
+    path("tuner",views.tuner,name = 'tuner'),
+    path("record_feedback", views.record_feedback, name='record_feedback'),
+    
 
 ]
