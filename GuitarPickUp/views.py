@@ -116,6 +116,9 @@ class LoginAPI(KnoxLoginView):
 def coursePage(request):
     #t1 = threading.Thread(target=sound)
     #t1.start()
+    #print(request.user.id)
+    feedback = Feedback(feedback = "test" , report = "test",user_id = request.user)
+    feedback.save()
     return render(request, 'base/try_excercise.html')
 
 def feedbackpage(request):
@@ -186,6 +189,25 @@ def validate_hands(request):
     return JsonResponse(data)
 
 
+def record_feedback(request):
+    index_class = request.GET.get('index_class')
+    middle_class = request.GET.get('middle_class')
+    ring_class = request.GET.get('middle_class')
+    pinky_class = request.GET.get('pinky_class')
+    note_played = request.GET.get('note_played')
+    index_bool = index_class == 'correct'
+    middle_bool = middle_class == 'correct'
+    ring_bool = ring_class == 'correct'
+    pinky_bool = pinky_class == 'correct'
+
+    last_feedback_id = Feedback.objects.latest('id')
+    feedback_details = Feedback_details(feedback_id = last_feedback_id,index_class = index_bool,
+                            middle_class = middle_bool,
+                            ring_class = ring_bool,
+                             pinky_class = pinky_bool,
+                             note_played = note_played)
+    feedback_details.save()
+    return JsonResponse({'ok':1})
 
 
 #to capture video class

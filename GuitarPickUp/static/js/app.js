@@ -1,7 +1,7 @@
 const Application = function() {
   //this.initA4()
   this.tuner = new Tuner(this.a4)
-  this.notes = new Notes('.notes', this.tuner)
+  this.notes = new Notes('#noteID', this.tuner)
   //this.meter = new Meter('.meter')
   //this.frequencyBars = new FrequencyBars('.frequency-bars')
   this.update({ name: 'A', frequency: this.a4, octave: 4, value: 69, cents: 0 })
@@ -26,7 +26,7 @@ Application.prototype.start = function() {
     }
   }
 
-  swal.fire('Welcome online tuner!').then(function() {
+  swal.fire('Welcome to your first Exercise !!').then(function() {
     self.tuner.init()
     self.frequencyData = new Uint8Array(self.tuner.analyser.frequencyBinCount)
   })

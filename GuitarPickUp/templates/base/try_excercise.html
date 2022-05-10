@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block body %}
+
 <div class="site-mobile-menu site-navbar-target">
     <div class="site-mobile-menu-header">
         <div class="site-mobile-menu-close mt-3">
@@ -73,7 +74,9 @@
                 </div>
             
             </div>
+            
             <script type="module">
+                
                 const videoElement = document.getElementsByClassName('input_video')[0];
                 const canvasElement = document.getElementsByClassName('output_canvas')[0];
                 const canvasCtx = canvasElement.getContext('2d');
@@ -98,6 +101,54 @@
                             }
                         }
                       }
+
+                    // identify an element to observe
+                    let elementToObserve = document.getElementById('noteID');
+                    
+                    // create a new instance of 'MutationObserver' named 'observer', 
+                    // passing it a callback function
+                    let note_changed = document.getElementById('noteID').innerHTML;   
+                    let observer = new MutationObserver(function (mutationsList, observer) {
+                        //console.log(mutationsList);
+                        //console.log(note_changed);
+                        //console.log(document.getElementById('noteID').innerHTML)
+                        //console.log(note_changed != document.getElementById('noteID').innerHTML);
+                        if(note_changed != document.getElementById('noteID').innerHTML)
+                        {
+                            note_changed = document.getElementById('noteID').innerHTML;
+                            let index_class = document.getElementById('index').innerHTML;
+                            let middle_class = document.getElementById('middle').innerHTML;
+                            let ring_class = document.getElementById('ring').innerHTML;
+                            let pinky_class = document.getElementById('pinky').innerHTML;
+                            console.log('noticable change');
+                            //console.log(note_changed);
+                            $.ajax({
+                                url: '/record_feedback',
+                                data: {
+                                    'index_class': index_class,
+                                    'middle_class':middle_class,
+                                    'ring_class':ring_class,
+                                    'pinky_class':pinky_class,
+                                    'note_played': note_changed,
+
+                                },
+                                dataType: 'json',
+                                success: function (data) {
+                                    console.log('success');
+
+                                }
+                            });
+                            //save classes and note 
+                        }
+                        
+                        
+                        
+                    });
+
+                    // call 'observe' on that MutationObserver instance, 
+                    // passing it the element to observe, and the options object
+                    observer.observe(elementToObserve, { characterData: true, childList: true, attributes: false });
+
                     $.ajax({
                         url: '/validate_hands',
                         data: {
@@ -105,14 +156,14 @@
                         },
                         dataType: 'json',
                         success: function (data) {
-                            console.log(data);
+                            //console.log(data);
                             if (data["index"]) {
                                 $('#index').text(data['index']);
                                 $('#ring').text(data['ring']);
                                 $('#middle').text(data['middle']);
                                 $('#pinky').text(data['pinky']);
-                                console.log(data);
-                                $('#note').text(data['note']);
+                                //console.log(data);
+                                //$('#note').text(data['note']);
                             }
                         }
                     });
@@ -144,13 +195,17 @@
                   height: 350
                 });
                 camera.start();
+                
+                    
                 </script>
         </div>
         <div style="position: absolute; text-align: center; width:100%; bottom:2%; background-color: white; color: black; width: 300px; height: 240px; margin-left: auto; margin-right: auto; left: 0; right: 0;">
             Feedback
             <hr>
             <dl>
-
+                <dt>note</dt>
+                <!--<dd id="note">asd</dd>-->
+                <dd id="noteID">A</dd>
                 <dt>Index</dt>
                 <dd id="index">0.2</dd>
                 <dt>Middle</dt>
@@ -159,18 +214,25 @@
                 <dd id="ring">0.2</dd>
                 <dt>Pinky</dt>
                 <dd id="pinky">0.2</dd>
-                <dt>note</dt>
-                <dd id="note">asd</dd>
-
+                
+                
                 
             
-            </dl>        </div>
+            </dl>        
+        </div>
+
+            
 
         <div style="position: absolute; text-align: center; width:100%; bottom:25%"><button class="btn btn-primary py-3 px-5 btn-pill exercise">Try now</button></div>
 
     </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script src="https://cdn.jsdelivr.net/npm/aubiojs"></script>
+<script src="/static/js/tuner.js"></script>
+<script src="/static/js/meter.js"></script>
+<script src="/static/js/notes.js"></script>
+<script src="/static/js/app.js"></script>
 
 <!--------------------------Contact us section ----------------------------------->
 

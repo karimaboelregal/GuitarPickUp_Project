@@ -2,8 +2,11 @@ const Notes = function(selector, tuner) {
   this.tuner = tuner
   this.isAutoMode = true
   this.$root = document.querySelector(selector)
+  
+  //console.log(this.$root)
   //this.$notesList = this.$root.querySelector('.notes-list')
-  this.$frequency = this.$root.querySelector('.frequency')
+  //this.$frequency = this.$root.querySelector('.frequency')
+  //this.$noteName = this.$root.querySelector('#noteName')
   this.$notes = []
   this.$notesMap = {}
   this.createNotes()
@@ -73,11 +76,17 @@ Notes.prototype.clearActive = function() {
 Notes.prototype.update = function(note) {
   if (note.value in this.$notesMap) {
     this.active(this.$notesMap[note.value])
-    this.$frequency.childNodes[0].textContent = parseFloat(
+    /*this.$frequency.childNodes[0].textContent = parseFloat(
       note.frequency
       
-    ).toFixed(1)
-    console.log(note)
+    ).toFixed(1)*/
+
+    //this.$noteName.childNodes[0].textContent = note.name
+    //this.text = note.name
+    //console.log(this.$root.text)
+    //$('#noteID').text(note.name)
+    this.$root.innerHTML = note.name
+    //console.log(note['name'])
   }
 }
 
