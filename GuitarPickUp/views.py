@@ -7,6 +7,9 @@ from django.views.decorators import gzip
 from django.http import StreamingHttpResponse
 from django.http import HttpResponseRedirect
 import cv2
+from django.contrib import messages
+from django.http.response import JsonResponse
+from django.shortcuts import get_object_or_404, render
 import threading
 import mediapipe as mp
 import time
@@ -424,4 +427,15 @@ class handDetector():
                 #cv2.circle(img,(cx,cy),25,(255,0,255),cv2.FILLED)
             #    print(id,str(cx*lm.z),str(cy*lm.z))
     
-    
+def record(request):
+    if request.method == "POST":
+        video_file = request.FILES.get("excercise_video")
+        record = StudentVideo.objects.create(video_record=video_file)
+        record.save()
+        messages.success(request, "Video successfully added!")
+        return JsonResponse(
+            {
+                "success": True,
+            }
+        )
+    return render(request, "base/try_excercise.html")

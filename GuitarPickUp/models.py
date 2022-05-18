@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
+
+from django.db import models
+from django.urls.base import reverse
 
 # Create your models here.
 
@@ -20,7 +24,9 @@ class StudentVideo(models.Model):
     user_id = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     Excercise_id = models.ForeignKey(Excercise,on_delete=models.CASCADE,null=True,blank=True)
     feedback_id = models.IntegerField(null=True,blank=True)
-    Path = models.TextField(null=True,blank=True)
+    report= models.TextField(null=True,blank=True)
+    video_record = models.FileField(upload_to="records")
+    video_Path = models.TextField(null=True,blank=True)
 
     def __str__(self) -> str:
         return self.title
@@ -55,3 +61,18 @@ class Feedback_details(models.Model):
 
     class Meta:
         ordering =['feedback_id']
+
+# class Record(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     voice_record = models.FileField(upload_to="records")
+#     language = models.CharField(max_length=50, null=True, blank=True)
+
+#     class Meta:
+#         verbose_name = "Record"
+#         verbose_name_plural = "Records"
+
+#     def __str__(self):
+#         return str(self.id)
+
+#     def get_absolute_url(self):
+#         return reverse("core:record_detail", kwargs={"id": str(self.id)})
