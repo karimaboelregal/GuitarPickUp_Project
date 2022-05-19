@@ -134,8 +134,9 @@
                             let middle_class = document.getElementById('middle').innerHTML;
                             let ring_class = document.getElementById('ring').innerHTML;
                             let pinky_class = document.getElementById('pinky').innerHTML;
-                            console.log('noticable change');
+                            //console.log('noticable change');
                             //console.log(note_changed);
+                            
                             $.ajax({
                                 url: '/record_feedback',
                                 data: {
@@ -162,7 +163,7 @@
                     // call 'observe' on that MutationObserver instance, 
                     // passing it the element to observe, and the options object
                     observer.observe(elementToObserve, { characterData: true, childList: true, attributes: false });
-
+                    
                     $.ajax({
                         url: '/validate_hands',
                         data: {
@@ -200,7 +201,7 @@
                   minTrackingConfidence: 0.5
                 });
                 hands.onResults(onResults);
-
+                camera_stream = null;
                 start_camera.addEventListener('click', async function() {
                     document.getElementById("start-camera").style.display="none";
                     document.getElementById("start-record").style.display="";
@@ -214,31 +215,35 @@
                     });
                     camera.start();
                     camera_stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                    console.log(camera_stream);
 	                video.srcObject = camera_stream;
                 });
                 
-
+                media_recorder = null;
                 start_button.addEventListener('click', function() {
                     var input = this;
                     input.disabled = true;
                     document.getElementById("feedback_table").style.display="";
-                // set MIME type of recording as video/webm
-                media_recorder = new MediaRecorder(camera_stream, { mimeType: "video/webm; codecs=vp8" });
+                    // set MIME type of recording as video/webm
+                    //console.log(camera_stream);
+                    media_recorder = new MediaRecorder(camera_stream, { mimeType: "video/webm; codecs=vp8" });
 
-                // event : new recorded video blob available 
-                media_recorder.addEventListener('dataavailable', function(e) {
-                    blobs_recorded.push(e.data);
-                });
+                    // event : new recorded video blob available 
+                    media_recorder.addEventListener('dataavailable', function(e) {
+                        //console.log(blobs_recorded);
+                        blobs_recorded.push(e.data);
+                    });
 
-                // event : recording stopped & all blobs sent
-                media_recorder.addEventListener('stop', function() {
-                    // create local object URL from the recorded video blobs
-                    let video_local = URL.createObjectURL(new Blob(blobs_recorded, { type: "video/webm; codecs=vp8" }));
-                    download_link.href = video_local;
-                });
+                    // event : recording stopped & all blobs sent
+                    media_recorder.addEventListener('stop', function() {
+                        // create local object URL from the recorded video blobs
+                        let video_local = URL.createObjectURL(new Blob(blobs_recorded, { type: "video/webm; codecs=vp8" }));
+                        console.log(video_local);
+                        download_link.href = video_local;
+                    });
 
-                // start recording with each recorded blob having 1 second video
-                media_recorder.start(1000);
+                    // start recording with each recorded blob having 1 second video
+                    media_recorder.start(1000);
                 });
 
                 stop_button.addEventListener('click', function() {
@@ -249,7 +254,7 @@
                     document.getElementById("feedback_table").style.display="none";
                     document.getElementById("submit").style.display="";
                     media_recorder.stop(); 
-                    onResults.stop();
+                    //onResults.stop();
 
                 });
                 
@@ -273,12 +278,13 @@
                         data: data,
                         dataType: "json",
                         success: function (response) {
-                        if (response.success) {
-                            document.getElementById("alert").style.display = "block";
-                            window.location.href = `${response.url}`;
-                        } else {
-                            btn.html("Error").prop("disabled", false);
-                        }
+                            alert('passed');
+                            if (response.success) {
+                                document.getElementById("alert").style.display = "block";
+                                window.location.href = `${response.url}`;
+                            } else {
+                                btn.html("Error").prop("disabled", false);
+                            }
                         },
                         error: function (error) {
                         console.error(error);
@@ -288,6 +294,7 @@
                         contentType: false,
                     });
                 });
+                    
 
                 // using jQuery
                 function getCookie(name) {
@@ -324,6 +331,7 @@
         </div>
 
         <div style="position:absolute; text-align: center; width:100%; bottom:25%"><button id="start-camera" class="btn btn-primary py-3 px-5 btn-pill exercise">Open camera</button></div>
+        
         <div class="row">
             <div class="col-md-3">
                 <div style="position: absolute; text-align: center; width:100%; bottom:25%;margin-bottom: 45%;margin-left: 60%;"><button id="start-record" class="btn btn-primary py-3 px-5 btn-pill exercise">Start Excercise</button></div>

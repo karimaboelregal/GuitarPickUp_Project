@@ -25,7 +25,7 @@ class StudentVideo(models.Model):
     Excercise_id = models.ForeignKey(Excercise,on_delete=models.CASCADE,null=True,blank=True)
     feedback_id = models.IntegerField(null=True,blank=True)
     report= models.TextField(null=True,blank=True)
-    video_record = models.FileField(upload_to="records")
+    video_record = models.FileField(null = True,upload_to="records")
     video_Path = models.TextField(null=True,blank=True)
 
     def __str__(self) -> str:

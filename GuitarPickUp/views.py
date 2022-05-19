@@ -120,8 +120,8 @@ def coursePage(request):
     #t1 = threading.Thread(target=sound)
     #t1.start()
     #print(request.user.id)
-    feedback = Feedback(feedback = "test" , report = "test",user_id = request.user)
-    feedback.save()
+    #feedback = Feedback(feedback = "test" , report = "test",user_id = request.user)
+    #feedback.save()
     return render(request, 'base/try_excercise.html')
 
 def feedbackpage(request):
@@ -429,13 +429,17 @@ class handDetector():
     
 def record(request):
     if request.method == "POST":
+        
         video_file = request.FILES.get("excercise_video")
         record = StudentVideo.objects.create(video_record=video_file)
         record.save()
+        
         messages.success(request, "Video successfully added!")
+        
         return JsonResponse(
             {
                 "success": True,
             }
         )
-    return render(request, "base/try_excercise.html")
+        
+    return render(request, "base/home.html")
