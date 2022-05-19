@@ -15,7 +15,7 @@ class Excercise(models.Model):
     played = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return self.title
+        return self.title + self.positions
 
     class Meta:
         ordering =['played']

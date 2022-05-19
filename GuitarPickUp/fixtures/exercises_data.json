@@ -11,7 +11,7 @@
         "model": "GuitarPickUp.Excercise",
         "pk": 2,
         "fields": {
-            "positions": "fifth",
+            "positions": "first",
             "title": "A minor"
         }
     }

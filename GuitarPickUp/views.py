@@ -48,8 +48,15 @@ def home(request):
         password = request.POST.get('password1')
         user = User.objects.create_user(username, email, password)
         user.save()
-        
-    return render(request, 'base/home.html')
+    
+    exercises = Excercise.objects.values('id','title','positions')
+    feedback = None
+    if(request.user.id != None):
+        feedback = Feedback.objects.filter(user_id = request.user.id).values('id','feedback')#user_id = request.user.id
+    
+    #print(feedback.values())
+    #print(exercises)
+    return render(request, 'base/home.html',{'exercises':exercises,'feedbacks':feedback})
 
 class CustomLoginView(LoginView):
     template_name = 'base/login.html'
