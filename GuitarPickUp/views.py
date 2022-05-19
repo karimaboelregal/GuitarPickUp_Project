@@ -122,6 +122,8 @@ def coursePage(request):
     #print(request.user.id)
     #feedback = Feedback(feedback = "test" , report = "test",user_id = request.user)
     #feedback.save()
+    
+    
     return render(request, 'base/try_excercise.html')
 
 def feedbackpage(request):
@@ -147,8 +149,8 @@ ring_model = joblib.load("GuitarPickUp/models/classifier_ring.pkl")
 pinky_model = joblib.load("GuitarPickUp/models/classifier_pinky.pkl")
 
 def validate_hands(request):
-    left_hand = request.GET.get('left_hand', None)
-    right_hand = request.GET.get('right_hand', None)
+    left_hand = request.POST.get('left_hand', None)
+    right_hand = request.POST.get('right_hand', None)
     data = {}
     if (right_hand):
         right_decoded = json.loads(right_hand)
@@ -176,7 +178,7 @@ def validate_hands(request):
         pinky_left_coor = pinky_left_coor.reshape(1,12)
                     
                     
-        print(index_left_coor)
+        #print(index_left_coor)
         index_prediction = index_model.predict(index_left_coor)[0]
         middle_prediction = middle_model.predict(middle_left_coor)[0]
         ring_prediction = ring_model.predict(ring_left_coor)[0]
@@ -193,6 +195,7 @@ def validate_hands(request):
 
 
 def record_feedback(request):
+    '''
     index_class = request.GET.get('index_class')
     middle_class = request.GET.get('middle_class')
     ring_class = request.GET.get('middle_class')
@@ -202,7 +205,10 @@ def record_feedback(request):
     middle_bool = middle_class == 'correct'
     ring_bool = ring_class == 'correct'
     pinky_bool = pinky_class == 'correct'
-
+    '''
+    #feedback = Feedback(feedback = "test" , report = "test",user_id = request.user)
+    #feedback.save()
+    '''
     last_feedback_id = Feedback.objects.latest('id')
     feedback_details = Feedback_details(feedback_id = last_feedback_id,index_class = index_bool,
                             middle_class = middle_bool,
@@ -210,6 +216,21 @@ def record_feedback(request):
                              pinky_class = pinky_bool,
                              note_played = note_played)
     feedback_details.save()
+    '''
+    feedback = Feedback(feedback = "test" , report = "test",user_id = request.user)
+    feedback.save()
+    
+    last_feedback_id = str(Feedback.objects.latest('id'))
+    
+    
+    
+    positions = request.POST.get('positions')
+    #replace sharps with just a hash
+    positions = positions.replace('\u266f', '#')
+    with open(f'feedbacks/{last_feedback_id}','w') as f:
+        json.dump(positions,f)
+    messages.success(request, "feedback saved!")
+    
     return JsonResponse({'ok':1})
 
 

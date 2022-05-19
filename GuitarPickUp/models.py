@@ -42,7 +42,7 @@ class Feedback(models.Model):
     report= models.TextField(null=True,blank=True)
 
     def __str__(self) -> str:
-        return self.feedback
+        return str(self.id)
 
     class Meta:
         ordering =['video_id']

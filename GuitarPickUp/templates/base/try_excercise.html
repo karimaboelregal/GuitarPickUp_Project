@@ -90,7 +90,7 @@
                 let camera_stream = null;
                 let media_recorder = null;
                 let blobs_recorded = [];
-                
+                let note_positions = [];
                 const videoElement = document.getElementsByClassName('input_video')[0];
                 const canvasElement = document.getElementsByClassName('output_canvas')[0];
                 const canvasCtx = canvasElement.getContext('2d');
@@ -136,23 +136,15 @@
                             let pinky_class = document.getElementById('pinky').innerHTML;
                             //console.log('noticable change');
                             //console.log(note_changed);
+                            note_positions.push({'index':index_class == 'correct',
+                                                'middle':middle_class == 'correct',
+                                                'ring':ring_class == 'correct',
+                                                'pinky':pinky_class == 'correct',
+                                                'note':note_changed
+                                            });
+                            //console.log(note_positions);
+
                             
-                            $.ajax({
-                                url: '/record_feedback',
-                                data: {
-                                    'index_class': index_class,
-                                    'middle_class':middle_class,
-                                    'ring_class':ring_class,
-                                    'pinky_class':pinky_class,
-                                    'note_played': note_changed,
-
-                                },
-                                dataType: 'json',
-                                success: function (data) {
-                                    console.log('success');
-
-                                }
-                            });
                             //save classes and note 
                         }
                         
@@ -169,6 +161,7 @@
                         data: {
                             'right_hand': JSON.stringify(right_hand),
                         },
+                        method :'POST',
                         dataType: 'json',
                         success: function (data) {
                             //console.log(data);
@@ -255,6 +248,22 @@
                     document.getElementById("submit").style.display="";
                     media_recorder.stop(); 
                     //onResults.stop();
+
+                    
+                            $.ajax({
+                                url: '/record_feedback',
+                                method: "POST",
+                                data: {
+                                    'positions': JSON.stringify(note_positions),
+                                    
+
+                                },
+                                dataType: 'json',
+                                success: function (data) {
+                                    console.log('success');
+
+                                }
+                            });
 
                 });
                 
