@@ -1,0 +1,18 @@
+[
+    {
+        "model": "GuitarPickUp.Excercise",
+        "pk": 1,
+        "fields": {
+            "positions": "fifth",
+            "title": "A minor"
+        }
+    },
+    {
+        "model": "GuitarPickUp.Excercise",
+        "pk": 2,
+        "fields": {
+            "positions": "fifth",
+            "title": "A minor"
+        }
+    }
+]
