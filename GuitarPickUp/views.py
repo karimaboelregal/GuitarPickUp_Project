@@ -39,6 +39,8 @@ import numpy as np
 import threading
 from django.http import JsonResponse
 
+from django.conf import settings 
+
 def home(request):
     if (request.method == 'POST'):
         username = request.POST.get('username')
@@ -217,17 +219,18 @@ def record_feedback(request):
                              note_played = note_played)
     feedback_details.save()
     '''
-    feedback = Feedback(feedback = "test" , report = "test",user_id = request.user)
+    feedback_root = settings.FEEDBACK_URL
+    last_feedback_id = str(int(str(Feedback.objects.latest('id'))) + 1)
+    full_path = feedback_root + last_feedback_id
+    feedback = Feedback(feedback = full_path , report = "test",user_id = request.user)
     feedback.save()
     
-    last_feedback_id = str(Feedback.objects.latest('id'))
-    
-    
-    
+    #last_feedback_id = str(Feedback.objects.latest('id'))
+
     positions = request.POST.get('positions')
     #replace sharps with just a hash
     positions = positions.replace('\u266f', '#')
-    with open(f'feedbacks/{last_feedback_id}','w') as f:
+    with open(f'{feedback_root}{last_feedback_id}','w') as f:
         json.dump(positions,f)
     messages.success(request, "feedback saved!")
     
