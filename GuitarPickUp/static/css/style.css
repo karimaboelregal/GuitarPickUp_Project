@@ -653,7 +653,9 @@ h1, h2, h3, h4, h5,
     position: absolute;
     height: 100%;
     width: 100%;
-    background: #343a40;
+    background: linear-gradient(to top, #4d0505f3, #a70202cb), url(/static/images/main.webp);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
     opacity: .9;
     border-bottom-right-radius: 0px; }
     @media (max-width: 991.98px) {
