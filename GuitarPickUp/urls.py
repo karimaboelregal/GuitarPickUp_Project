@@ -1,5 +1,5 @@
 from django.urls import include, path
-from .views import CustomLoginView, LoginAPI, RegisterAPI,mediapipePage,coursePage
+from .views import CustomLoginView, LoginAPI, RegisterAPI,mediapipePage,coursePage,validate_hands2
 from . import views
 from django.contrib.auth.views import LogoutView
 from rest_framework import routers
@@ -10,6 +10,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('api/register/', RegisterAPI.as_view(), name='register'),
     path('api/login/', LoginAPI.as_view(), name='login'),
+    path('api/validate_hands/', validate_hands2.as_view(), name='validate_hands2'),
     path('api/logout/', knox_views.LogoutView.as_view(), name='logout'),
     path('api/logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall'),
     #path('register/', views.registerPage, name="register"),

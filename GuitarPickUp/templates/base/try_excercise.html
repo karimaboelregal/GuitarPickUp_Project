@@ -57,26 +57,27 @@
 
 <!--------------------------Home section ----------------------------------->
 
-<div class="intro-section" id="programs-section">
-    <div class="slide-1" style="background-image: url('static/images/main.jpeg');" data-stellar-background-ratio="0.5">
-        <h1 data-aos="fade-up" data-aos-delay="100" class="text-center" style="position: absolute; text-align: center; width:100%; top:20%">Exercise 1</h1>
+<div class="intro-section" id="programs-section" style="width:100%; background-color: white; overflow-x: hidden; overflow-y: hidden;">
+    <div class="slide-1">
 
         <div class="container">
 
-            <div class="row align-items-center">
+            <div style="  position: absolute;left: 25%;top: 20%;min-width:100%;min-height:100%;">
                 
-                <div class="col-6"><video width="450" height="350" controls style="object-fit: fill;"><source src="/static/images/video1.mp4" type="video/mp4"></video></div>
-                <div class="col-6">
-                    <div class="container">
-                        <video class="input_video" style="display:none"></video>
-                        <canvas class="output_canvas" width="450" height="350"></canvas>
-                      </div>
-                </div>
+                    <video id="video-demo" width="800" height="600" controls style="object-fit: fill;">
+                        <source src="/static/images/video1.mp4" type="video/mp4">
+                        Your browser does not support HTML5 video.
+                      </video>
             
             </div>
-            
+            <div style=" position: absolute;left: 12%;top: 20%;min-width:100%;min-height:100%;">
+                <div class="container">
+                    <video class="input_video" style="display:none"></video>
+                    <canvas class="output_canvas" width="600" height="400"></canvas>
+                  </div>
+
+            </div>
             <script type="module">
-                
                 document.getElementById("start-record").style.display="none";
                 document.getElementById("end-record").style.display="none";
                 document.getElementById("submit").style.display="none";
@@ -183,7 +184,8 @@
                   }
                   canvasCtx.restore();
                 }
-                
+                var myPlayer = new kwgVideo('#video-demo'); 
+
                 const hands = new Hands({locateFile: (file) => {
                   return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
                 }});
@@ -199,6 +201,8 @@
                     document.getElementById("start-camera").style.display="none";
                     document.getElementById("start-record").style.display="";
                     document.getElementById("end-record").style.display="";
+                    document.getElementById("video-demo").style.display="none";
+                    myPlayer.destroy();
                     const camera = new Camera(videoElement, {
                     onFrame: async () => {
                         await hands.send({image: videoElement});
@@ -339,16 +343,10 @@
                 </script>
         </div>
 
-        <div style="position:absolute; text-align: center; width:100%; bottom:25%"><button id="start-camera" class="btn btn-primary py-3 px-5 btn-pill exercise">Open camera</button></div>
-        
-        <div class="row">
-            <div class="col-md-3">
-                <div style="position: absolute; text-align: center; width:100%; bottom:25%;margin-bottom: 45%;margin-left: 60%;"><button id="start-record" class="btn btn-primary py-3 px-5 btn-pill exercise">Start Excercise</button></div>
-            </div>
-            <div class="col-md-3">
-                <div style="position: absolute; text-align: center; width:100%; bottom:25%;margin-bottom: 45%;margin-left: 115%;"><button id="end-record" class="btn btn-primary py-3 px-5 btn-pill exercise">End Excercise</button></div>
-            </div>
-        </div>
+        <div style="position:absolute; text-align: center; width:100%; bottom:25%; left:-23%"><button id="start-record" class="btn btn-primary py-3 px-5 btn-pill exercise">Start Excercise</button></div>
+        <div style="position:absolute; text-align: center; width:100%; bottom:25%; left:-4%"><button id="start-camera" class="btn btn-primary py-3 px-5 btn-pill exercise">Open camera</button></div>
+        <div style="position:absolute; text-align: center; width:100%; bottom:25%; left:16%"><button id="end-record" class="btn btn-primary py-3 px-5 btn-pill exercise">End Excercise</button></div>
+
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="field">
