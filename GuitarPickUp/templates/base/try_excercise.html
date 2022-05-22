@@ -339,13 +339,11 @@
                         }
                     }
                 });
-                    
                 </script>
         </div>
-
-        <div style="position:absolute; text-align: center; width:100%; bottom:25%; left:-23%"><button id="start-record" class="btn btn-primary py-3 px-5 btn-pill exercise">Start Excercise</button></div>
         <div style="position:absolute; text-align: center; width:100%; bottom:25%; left:-4%"><button id="start-camera" class="btn btn-primary py-3 px-5 btn-pill exercise">Open camera</button></div>
-        <div style="position:absolute; text-align: center; width:100%; bottom:25%; left:16%"><button id="end-record" class="btn btn-primary py-3 px-5 btn-pill exercise">End Excercise</button></div>
+        <button id="start-record" class="btn btn-primary py-3 px-5 btn-pill exercise" style="position:absolute; text-align: center; width:300px; bottom:25%; left:20%">Start Excercise</button>
+        <button id="end-record" class="btn btn-primary py-3 px-5 btn-pill exercise" style="position:absolute; text-align: center; width:300px; bottom:25%; left:65%">End Excercise</button>
 
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
