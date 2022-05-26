@@ -203,6 +203,7 @@ class validate_hands2(generics.GenericAPIView):
                 'pinky': pinky_prediction,
                 'note': info,
             }
+        return JsonResponse(data)
 
 
 
